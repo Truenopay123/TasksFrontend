@@ -38,7 +38,7 @@ class LoggerService {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = `${environment.apiUrl}/auth`;
+  private apiUrl = `${environment.apiUrlAuth}`;
 
   constructor(
     private http: HttpClient,
