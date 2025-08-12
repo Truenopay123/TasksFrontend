@@ -8,7 +8,7 @@ import { environment } from '../environments/environment.prod';
   providedIn: 'root',
 })
 export class TaskService {
-  private apiUrl = `${environment.apiUrlTask}`;
+  private apiUrl = `${environment.apiUrl}`;
 
   constructor(private http: HttpClient) {}
 
