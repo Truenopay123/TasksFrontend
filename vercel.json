@@ -3,10 +3,11 @@
     {
       "src": "/tasks/task-edit/(.*)",
       "dest": "/api/prerender.js?taskId=$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
-  ],
-  "rewrites": [
-    { "source": "/((?!tasks/task-edit/).*)", "destination": "/index.html" }
   ],
   "functions": {
     "api/prerender.js": {
