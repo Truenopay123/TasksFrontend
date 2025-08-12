@@ -1,0 +1,13 @@
+/* app/not-found/not-found.component.css */
+h1 {
+  color: #d32f2f;
+}
+
+a {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

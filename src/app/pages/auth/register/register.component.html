@@ -1,0 +1,74 @@
+<div class="login-container">
+  <p-toast position="top-right"></p-toast>
+  <p-card [style]="cardStyles">
+    <ng-template #header>
+      <div class="header-circle-container">
+        <div class="user-icon-circle">
+          <i class="pi pi-user user-icon"></i>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #title>
+      <div class="login-title">Registro</div>
+    </ng-template>
+
+    <div class="form-fields" *ngIf="!qrCode">
+      <div class="label">Nombre de usuario</div>
+      <p-inputgroup>
+        <p-inputgroup-addon>
+          <i class="pi pi-user"></i>
+        </p-inputgroup-addon>
+        <input pInputText [(ngModel)]="username" placeholder="Nombre de usuario" />
+      </p-inputgroup>
+
+      <div class="label">Contraseña</div>
+      <p-inputgroup>
+        <p-inputgroup-addon>
+          <i class="pi pi-lock"></i>
+        </p-inputgroup-addon>
+        <input pInputText type="password" [(ngModel)]="password" placeholder="Contraseña" />
+      </p-inputgroup>
+
+      <div class="label">Confirmar Contraseña</div>
+      <p-inputgroup>
+        <p-inputgroup-addon>
+          <i class="pi pi-lock"></i>
+        </p-inputgroup-addon>
+        <input pInputText type="password" [(ngModel)]="confirmPassword" placeholder="Confirmar Contraseña" />
+      </p-inputgroup>
+    </div>
+
+    <div class="form-fields" *ngIf="qrCode">
+      <div class="label">Escanea este código QR con tu app de autenticación</div>
+      <img [src]="qrCode" alt="Código QR para MFA" style="max-width: 200px; margin: 0 auto; display: block;" />
+      <div class="label">O ingresa este secreto manualmente: {{ secret }}</div>
+    </div>
+
+    <ng-template #footer>
+      <div class="login-buttons">
+        <p-button
+          label="Iniciar Sesión"
+          severity="secondary"
+          [outlined]="true"
+          [ngClass]="'w-full p-button-outlined'"
+          routerLink="/auth/login"
+        ></p-button>
+        <p-button
+          *ngIf="!qrCode"
+          (click)="register()"
+          label="Registrarse"
+          severity="info"
+          [ngClass]="'w-full'"
+        ></p-button>
+        <p-button
+          *ngIf="qrCode"
+          label="Continuar"
+          severity="info"
+          [ngClass]="'w-full'"
+          routerLink="/auth/login"
+        ></p-button>
+      </div>
+    </ng-template>
+  </p-card>
+</div>

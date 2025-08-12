@@ -1,0 +1,97 @@
+.task-create-container {
+  padding: 20px;
+  background: linear-gradient(135deg, #2e2e2e 0%, #1a1a1a 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  margin: 20px auto;
+  color: #fff;
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 1em;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+.p-inputgroup {
+  width: 100%;
+}
+
+.p-inputtext,
+.p-calendar,
+.p-dropdown {
+  width: 100%;
+  border-radius: 8px;
+  background: #333;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.p-inputtext.ng-invalid.ng-touched,
+.p-calendar.ng-invalid.ng-touched .p-inputtext,
+.p-dropdown.ng-invalid.ng-touched {
+  border-color: #d32f2f;
+  background: #3c2f2f;
+}
+
+.p-inputgroup-addon {
+  background: #444;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  color: #fff;
+}
+
+.p-inputgroup .p-inputtext {
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 0.8em;
+  margin-top: 4px;
+  display: none;
+}
+
+.form-group.ng-invalid.ng-touched .error-message {
+  display: block;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.p-button {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.p-button.p-button-secondary {
+  background: #616161;
+  border: none;
+}
+
+.p-button.p-button-secondary:hover {
+  background: #757575;
+}
+
+.p-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

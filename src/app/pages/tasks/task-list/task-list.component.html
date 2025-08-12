@@ -1,0 +1,52 @@
+<app-header [headerTitle]="'Tareas'"></app-header>
+
+<p-confirmDialog></p-confirmDialog>
+
+<div class="task-create-button">
+  <p-button
+    label="Crear Nueva Tarea"
+    icon="pi pi-plus"
+    [raised]="true"
+    (click)="navigateToCreate()"
+  ></p-button>
+</div>
+
+<div class="kanban-board">
+  <p-panel
+    *ngFor="let column of kanbanColumns; let i = index"
+    [header]="column.header"
+    class="kanban-column"
+    [style]="getColumnColor(column.status)"
+    [id]="column.status"
+    cdkDropList
+    [cdkDropListData]="column.tasks"
+    (cdkDropListDropped)="drop($event)"
+    [cdkDropListConnectedTo]="columnIds"
+  >
+    <div *ngFor="let task of column.tasks" cdkDrag>
+      <p-card class="kanban-card" [ngStyle]="{'background-color': getCardColor(task.status)}">
+        <h4 class="task-title">{{ task.name }}</h4>
+        <div class="task-content">
+          <p class="task-description">{{ task.description }}</p>
+          <small class="task-deadline">Creación: {{ task.created_at }}</small>
+          <br />
+          <small class="task-deadline">Fecha límite: {{ task.dead_line }}</small>
+        </div>
+        <div class="task-actions">
+          <p-button
+            icon="pi pi-pencil"
+            [rounded]="true"
+            severity="secondary"
+            (click)="navigateToEdit(task.id!)"
+          ></p-button>
+          <p-button  
+          icon="pi pi-trash"  
+          [rounded]="true" 
+          severity="danger" 
+          (click)="confirmDelete(task.id)"
+        ></p-button>
+        </div>
+      </p-card>
+    </div>
+  </p-panel>
+</div>

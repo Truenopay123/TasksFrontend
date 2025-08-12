@@ -1,0 +1,118 @@
+.kanban-board {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #2e2e2e 0%, #1a1a1a 100%);
+  color: #fff;
+  margin-top: 0;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.kanban-column {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  background: #272727;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.kanban-column::-webkit-scrollbar {
+  width: 8px;
+}
+
+.kanban-column::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+.kanban-card {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  color: #212121;
+  cursor: move;
+  background-color: #fff;
+}
+
+.kanban-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.task-title {
+  margin: 0;
+  font-size: 1.3em;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 16px 16px 8px;
+}
+
+.task-content {
+  padding: 0 16px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.task-description {
+  font-size: 0.95em;
+  color: #e0e0e0;
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.task-deadline {
+  font-size: 0.85em;
+  color: #b0b0b0;
+}
+
+.task-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 16px;
+}
+
+.p-button {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: 40px;
+  height: 40px;
+}
+
+.p-button.p-button-secondary {
+  background: #757575;
+  border: none;
+}
+
+.p-button.p-button-secondary:hover {
+  background: #616161;
+}
+
+.cdk-drag-preview {
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+  background: #ccc;
+  border-radius: 12px;
+}
+
+.task-create-button {
+  padding: 20px;
+  text-align: right;
+}
+
+.p-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

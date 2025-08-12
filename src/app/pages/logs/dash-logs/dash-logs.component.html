@@ -1,0 +1,45 @@
+<app-header [headerTitle]="'Dashboard de Logs'"></app-header>
+
+<div class="dashboard-container">
+  <button pButton pRipple type="button" icon="pi pi-arrow-left" (click)="goBack()" class="back-button">Tareas</button>
+  <div class="stats-summary">
+    <div class="stat-card">
+      <h3>Total de Logs</h3>
+      <p>{{ totalLogs }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Tiempo Promedio de Respuesta</h3>
+      <p>{{ avgResponseTime | number:'1.4-4' }}s</p>
+    </div>
+    <div class="stat-card">
+      <h3>Tiempo Mínimo de Respuesta</h3>
+      <p>{{ minResponseTime === 0 && totalLogs > 0 ? '0.0000' : (minResponseTime | number:'1.4-4') }}s</p>
+    </div>
+    <div class="stat-card">
+      <h3>Tiempo Máximo de Respuesta</h3>
+      <p>{{ maxResponseTime === 0 && totalLogs > 0 ? '0.0000' : (maxResponseTime | number:'1.4-4') }}s</p>
+    </div>
+  </div>
+
+  <div class="charts-container">
+    <div class="chart-section">
+      <h3>Distribución de Códigos de Estado</h3>
+      <canvas #statusChart width="400" height="200"></canvas>
+    </div>
+
+    <div class="chart-section">
+      <h3>Uso de la API</h3>
+      <canvas #apiChart width="400" height="200"></canvas>
+    </div>
+
+    <div class="chart-section">
+      <h3>Estadísticas de Tiempo de Respuesta</h3>
+      <canvas #responseTimeChart width="400" height="200"></canvas>
+    </div>
+
+    <div class="chart-section">
+      <h3>Evolución del Total de Logs</h3>
+      <canvas #totalLogsChart width="400" height="200"></canvas>
+    </div>
+  </div>
+</div>

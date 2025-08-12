@@ -1,0 +1,141 @@
+<app-header [headerTitle]="'Editar Tarea'"></app-header>
+
+<div class="task-edit-container">
+  <p-toast></p-toast>
+  <form #taskForm="ngForm" class="task-form" (ngSubmit)="onSubmit(taskForm)">
+    <div class="form-group">
+      <label for="name">Nombre de la Tarea</label>
+      <p-inputgroup>
+        <p-inputgroup-addon>
+          <i class="pi pi-file"></i>
+        </p-inputgroup-addon>
+        <input
+          pInputText
+          id="name"
+          [(ngModel)]="task.name"
+          name="name"
+          placeholder="Ingresa el nombre de la tarea"
+          required
+          #nameInput="ngModel"
+          [class.ng-invalid]="nameInput.invalid && nameInput.touched"
+        />
+      </p-inputgroup>
+      <small class="error-message" *ngIf="nameInput.invalid && nameInput.touched">
+        El campo "Nombre de la tarea" es obligatorio
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Descripción</label>
+      <p-inputgroup>
+        <p-inputgroup-addon>
+          <i class="pi pi-align-left"></i>
+        </p-inputgroup-addon>
+        <input
+          pInputText
+          id="description"
+          [(ngModel)]="task.description"
+          name="description"
+          placeholder="Ingresa una descripción"
+          required
+          #descriptionInput="ngModel"
+          [class.ng-invalid]="descriptionInput.invalid && descriptionInput.touched"
+        />
+      </p-inputgroup>
+      <small class="error-message" *ngIf="descriptionInput.invalid && descriptionInput.touched">
+        El campo "Descripción" es obligatorio
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="created_at">Fecha de Creación</label>
+      <p-calendar
+        id="created_at"
+        [(ngModel)]="task.created_at"
+        name="created_at"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        placeholder="Selecciona la fecha de creación"
+        required
+        #createdAtInput="ngModel"
+        [class.ng-invalid]="createdAtInput.invalid && createdAtInput.touched"
+      ></p-calendar>
+      <small class="error-message" *ngIf="createdAtInput.invalid && createdAtInput.touched">
+        El campo "Fecha de creación" es obligatorio
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="dead_line">Fecha Límite</label>
+      <p-calendar
+        id="dead_line"
+        [(ngModel)]="task.dead_line"
+        name="dead_line"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        placeholder="Selecciona la fecha límite"
+        required
+        #deadLineInput="ngModel"
+        [class.ng-invalid]="deadLineInput.invalid && deadLineInput.touched"
+      ></p-calendar>
+      <small class="error-message" *ngIf="deadLineInput.invalid && deadLineInput.touched">
+        El campo "Fecha límite" es obligatorio
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="status">Estado</label>
+      <p-dropdown
+        id="status"
+        [(ngModel)]="task.status"
+        name="status"
+        [options]="validStatuses"
+        placeholder="Selecciona un estado"
+        optionLabel="label"
+        optionValue="value"
+        required
+        #statusInput="ngModel"
+        [class.ng-invalid]="statusInput.invalid && statusInput.touched"
+      ></p-dropdown>
+      <small class="error-message" *ngIf="statusInput.invalid && statusInput.touched">
+        El campo "Estado" es obligatorio
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="is_alive">Activa</label>
+      <p-dropdown
+        id="is_alive"
+        [(ngModel)]="task.is_alive"
+        name="is_alive"
+        [options]="[{ label: 'Sí', value: true }, { label: 'No', value: false }]"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="¿La tarea está activa?"
+        required
+        #isAliveInput="ngModel"
+        [class.ng-invalid]="isAliveInput.invalid && isAliveInput.touched"
+      ></p-dropdown>
+      <small class="error-message" *ngIf="isAliveInput.invalid && isAliveInput.touched">
+        El campo "Activa" es obligatorio
+      </small>
+    </div>
+
+    <div class="form-actions">
+      <p-button
+        label="Guardar"
+        icon="pi pi-check"
+        [raised]="true"
+        type="submit"
+        [disabled]="taskForm.invalid"
+      ></p-button>
+      <p-button
+        label="Cancelar"
+        icon="pi pi-times"
+        [raised]="true"
+        severity="secondary"
+        (click)="cancel()"
+      ></p-button>
+    </div>
+  </form>
+</div>
