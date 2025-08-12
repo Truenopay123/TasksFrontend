@@ -4,7 +4,7 @@
   ],
   "build": {
     "env": {
-      "NEXT_PRIVATE_RENDER_MODE": "static"
+      "PRERENDER": "false"
     }
   }
 }
