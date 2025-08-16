@@ -1,12 +1,11 @@
-// dashlogs.component.ts
 import { Component, OnInit } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartData, ChartType, registerables } from 'chart.js';
 import { LogService } from '../../../core/logs/log.service';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { CommonModule } from '@angular/common';
-import { CardModule } from 'primeng/card'; // Importar CardModule
-import { IconFieldModule } from 'primeng/iconfield'; // Importar IconFieldModule para íconos
+import { CardModule } from 'primeng/card';
+import { IconFieldModule } from 'primeng/iconfield';
 
 Chart.register(...registerables);
 
@@ -28,8 +27,8 @@ interface Log {
     BaseChartDirective,
     CommonModule,
     HeaderComponent,
-    CardModule, // Agregar CardModule
-    IconFieldModule // Agregar IconFieldModule
+    CardModule,
+    IconFieldModule
   ],
   templateUrl: './dash-logs.component.html',
   styleUrls: ['./dash-logs.component.css']
@@ -48,31 +47,33 @@ export class DashLogsComponent implements OnInit {
   methodCounts: { [key: string]: number } = {};
   rateLimitMessage: string | null = null;
 
-  public sessionsChartType: ChartType = 'bar';
-  public sessionsChartData: ChartData<'bar'> = { datasets: [] };
+  // Declaración de las propiedades de etiquetas para las gráficas
   public sessionsChartLabels: string[] = [];
+  public methodChartLabels: string[] = [];
+  public statusChartLabels: string[] = [];
+  public rtChartLabels: string[] = [];
+
+  public sessionsChartType: ChartType = 'bar';
+  public sessionsChartData: ChartData<'bar'> = { datasets: [], labels: this.sessionsChartLabels };
   public sessionsChartOptions: ChartConfiguration['options'] = {
     scales: { y: { beginAtZero: true } }
   };
 
   public methodChartType: ChartType = 'bar';
-  public methodChartData: ChartData<'bar'> = { datasets: [] };
-  public methodChartLabels: string[] = [];
+  public methodChartData: ChartData<'bar'> = { datasets: [], labels: this.methodChartLabels };
   public methodChartOptions: ChartConfiguration['options'] = {
     indexAxis: 'y',
     scales: { x: { beginAtZero: true } }
   };
 
   public statusChartType: ChartType = 'bar';
-  public statusChartData: ChartData<'bar'> = { datasets: [] };
-  public statusChartLabels: string[] = ['200', '401', '404', '500'];
+  public statusChartData: ChartData<'bar'> = { datasets: [], labels: this.statusChartLabels };
   public statusChartOptions: ChartConfiguration['options'] = {
     scales: { y: { beginAtZero: true } }
   };
 
   public rtChartType: ChartType = 'line';
-  public rtChartData: ChartData<'line'> = { datasets: [] };
-  public rtChartLabels: string[] = [];
+  public rtChartData: ChartData<'line'> = { datasets: [], labels: this.rtChartLabels };
   public rtChartOptions: ChartConfiguration['options'] = {
     elements: { line: { fill: true } },
     scales: { y: { beginAtZero: true } }
@@ -144,6 +145,7 @@ export class DashLogsComponent implements OnInit {
   }
 
   private prepareCharts() {
+    // Gráfica de sesiones (Registros por Día)
     const dayCounts: { [day: string]: number } = {};
     for (const log of this.logs) {
       const day = log.timestamp.split(' ')[0];
@@ -151,30 +153,37 @@ export class DashLogsComponent implements OnInit {
     }
     this.sessionsChartLabels = Object.keys(dayCounts).sort();
     this.sessionsChartData = {
+      labels: this.sessionsChartLabels,
       datasets: [{
-        data: this.sessionsChartLabels.map(d => dayCounts[d]),
+        data: this.sessionsChartLabels.map(d => dayCounts[d] || 0),
         label: 'Registros por Día',
-        backgroundColor: 'yellow'
+        backgroundColor: '#FFFF00' // Amarillo
       }]
     };
 
+    // Gráfica de métodos (Distribución de Métodos)
     this.methodChartLabels = Object.keys(this.methodCounts);
     this.methodChartData = {
+      labels: this.methodChartLabels,
       datasets: [{
         data: Object.values(this.methodCounts),
         label: 'Métodos',
-        backgroundColor: 'cyan'
+        backgroundColor: '#00FFFF' // Cian
       }]
     };
 
+    // Gráfica de estados (Códigos de Estado)
+    this.statusChartLabels = ['200', '401', '404', '500'];
     this.statusChartData = {
+      labels: this.statusChartLabels,
       datasets: [{
         data: this.statusChartLabels.map(status => this.statusCounts[status] || 0),
         label: 'Códigos de Estado',
-        backgroundColor: 'blue'
+        backgroundColor: '#0000FF' // Azul
       }]
     };
 
+    // Gráfica de tiempo de respuesta (Tendencia de Tiempo de Respuesta)
     const dayRT: { [day: string]: { sum: number, count: number } } = {};
     for (const log of this.logs) {
       const day = log.timestamp.split(' ')[0];
@@ -185,10 +194,11 @@ export class DashLogsComponent implements OnInit {
     const sortedDays = Object.keys(dayRT).sort();
     this.rtChartLabels = sortedDays;
     this.rtChartData = {
+      labels: sortedDays,
       datasets: [{
-        data: sortedDays.map(d => dayRT[d].sum / dayRT[d].count),
+        data: sortedDays.map(d => dayRT[d].count > 0 ? dayRT[d].sum / dayRT[d].count : 0),
         label: 'Tiempo de Respuesta Promedio por Día',
-        borderColor: 'yellow',
+        borderColor: '#FFFF00', // Amarillo
         backgroundColor: 'rgba(255, 255, 0, 0.3)',
         fill: true
       }]
