@@ -1,6 +1,10 @@
 <app-header [headerTitle]="'Dashboard de Logs'"></app-header>
 
 <div class="dashboard-container">
+  <div *ngIf="isLoading" class="loading-message">
+    <p>Cargando...</p>
+  </div>
+
   <!-- Formulario de filtros -->
   <div class="filter-section">
     <h3>Filtros</h3>

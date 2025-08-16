@@ -29,6 +29,7 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
   rateLimitMessage: string = '';
   uniqueUsers: number = 0;
   uniqueRoutes: number = 0;
+  isLoading: boolean = true; // Nueva bandera para indicar carga
 
   // Propiedades para el formulario
   filterUser: string = '';
@@ -69,6 +70,7 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private fetchLogs(user?: string, route?: string, status?: string, startDate?: Date, endDate?: Date): void {
+    this.isLoading = true; // Activar carga
     this.logService.getLogs(user, route, status, startDate, endDate).subscribe({
       next: (response: any) => {
         if (response.statusCode === 200) {
@@ -81,8 +83,10 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
           this.logData = [];
         }
         this.processLogs();
+        this.isLoading = false; // Desactivar carga
       },
       error: (err: HttpErrorResponse) => {
+        console.error('Error fetching logs:', err); // Depuración
         if (err.status === 429) {
           this.rateLimitExceeded = true;
           this.rateLimitMessage = err.error?.intData?.message || 'Límite de peticiones excedido. Por favor, intenta de nuevo más tarde.';
@@ -92,6 +96,7 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         this.logData = [];
         this.processLogs();
+        this.isLoading = false; // Desactivar carga
       }
     });
   }
