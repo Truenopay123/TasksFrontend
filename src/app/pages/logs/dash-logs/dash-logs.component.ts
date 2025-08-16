@@ -6,6 +6,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-dash-logs',
@@ -15,7 +16,7 @@ import { DecimalPipe } from '@angular/common';
   styleUrl: './dash-logs.component.css'
 })
 export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
-  logData: any[] = []; // Cambiado a any[] para manejar objetos JSON
+  logData: any[] = [];
   statusCounts: { [key: string]: number } = {};
   totalLogs: number = 0;
   avgResponseTime: number = 0;
@@ -23,6 +24,8 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
   maxResponseTime: number = 0;
   apiUsage: { [key: string]: number } = {};
   logsByService: { [key: string]: number } = {};
+  rateLimitExceeded: boolean = false;
+  rateLimitMessage: string = '';
 
   @ViewChild('statusChart') statusChartRef!: ElementRef;
   @ViewChild('apiChart') apiChartRef!: ElementRef;
@@ -34,7 +37,6 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
   private totalLogsChart!: Chart;
   private refreshInterval: any;
 
-  // Historial de totalLogs con timestamps
   logHistory: { timestamp: string, total: number }[] = [];
 
   constructor(
@@ -47,7 +49,7 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchLogs();
     this.refreshInterval = setInterval(() => {
       this.fetchLogs();
-    }, 60000); // Refresca cada minuto
+    }, 60000);
   }
 
   ngAfterViewInit(): void {
@@ -71,9 +73,15 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (data: any) => {
         this.logData = data.logs || [];
         this.processLogs();
+        this.rateLimitExceeded = false;
       },
-      error: (err) => {
-        console.error('Error fetching logs:', err);
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 429) {
+          this.rateLimitExceeded = true;
+          this.rateLimitMessage = err.error.message || 'Límite de peticiones excedido. Por favor, intenta de nuevo más tarde.';
+        } else {
+          console.error('Error fetching logs:', err);
+        }
         this.logData = [];
         this.processLogs();
       }
@@ -92,34 +100,23 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.avgResponseTime = 0;
 
     this.logData.forEach((log: any) => {
-      // Extraer datos directamente de los objetos JSON
       const status = log.status.toString();
       const responseTime = parseFloat(log.response_time) || 0;
       const route = log.route;
       const service = log.service;
 
-      // Contar códigos de estado
       this.statusCounts[status] = (this.statusCounts[status] || 0) + 1;
-
-      // Acumular tiempos de respuesta
       totalResponseTime += responseTime;
       responseTimes.push(responseTime);
       this.minResponseTime = Math.min(this.minResponseTime, responseTime);
       this.maxResponseTime = Math.max(this.maxResponseTime, responseTime);
-
-      // Contar uso de API
       const apiKey = `${service}:${route}`;
       this.apiUsage[apiKey] = (this.apiUsage[apiKey] || 0) + 1;
-
-      // Contar logs por servicio
       this.logsByService[service] = (this.logsByService[service] || 0) + 1;
     });
 
-    // Añadir al historial con timestamp
     const now = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
     this.logHistory.push({ timestamp: now, total: this.totalLogs });
-
-    // Limitar el historial a los últimos 10 puntos
     if (this.logHistory.length > 10) {
       this.logHistory.shift();
     }

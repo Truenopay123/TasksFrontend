@@ -1,6 +1,6 @@
 <app-header [headerTitle]="'Dashboard de Logs'"></app-header>
 
-<div class="dashboard-container">
+<div class="dashboard-container" *ngIf="!rateLimitExceeded; else rateLimitMessage">
   <button pButton pRipple type="button" icon="pi pi-arrow-left" (click)="goBack()" class="back-button">Tareas</button>
   <div class="stats-summary">
     <div class="stat-card">
@@ -43,3 +43,9 @@
     </div>
   </div>
 </div>
+
+<ng-template #rateLimitMessage>
+  <div class="rate-limit-message">
+    <p>{{ rateLimitMessage }}</p>
+  </div>
+</ng-template>
