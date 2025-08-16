@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
-import { AuthService } from '../../../core/auth/auth.service'; // Ajusta la ruta según tu estructura
-import { Router } from '@angular/router'; // Importa Router
+import { AuthService } from '../../../core/auth/auth.service'; // Adjust path as needed
+import { Router } from '@angular/router'; // Import Router
 
 @Component({
   selector: 'app-header',
@@ -14,21 +14,20 @@ import { Router } from '@angular/router'; // Importa Router
 export class HeaderComponent {
   @Input() headerTitle: string = '';
 
-  constructor( private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router) {}
 
   logout(): void {
     this.authService.logout();
     console.log('Se hizo clic en Cerrar sesión');
-
-  }
-
-  addTask() {
-    console.log('Add task clicked');
-    // Implementa la lógica para agregar una tarea aquí
   }
 
   goToDashLogs(): void {
-    this.router.navigate(['/logs/dash-logs']); // Navega a la ruta /logs
+    this.router.navigate(['/logs/dash-logs']);
     console.log('Navegando a DashLogs');
+  }
+
+  goToTasks(): void {
+    this.router.navigate(['/tasks/task-list']);
+    console.log('Navegando a Tasks');
   }
 }

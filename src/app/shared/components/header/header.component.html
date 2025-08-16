@@ -3,10 +3,37 @@
     <h1 class="header-title">{{ headerTitle }}</h1>
   </div>
   <div class="header-right">
-    <button pButton pRipple type="button" icon="pi pi-chart-bar" (click)="goToDashLogs()" class="p-button-secondary p-button-rounded" aria-label="Go to DashLogs">
+    <button
+      pButton
+      pRipple
+      type="button"
+      icon="pi pi-list"
+      (click)="goToTasks()"
+      class="p-button-secondary p-button-rounded"
+      aria-label="Go to Tasks"
+    >
+      <span class="button-label">Tasks</span>
+    </button>
+    <button
+      pButton
+      pRipple
+      type="button"
+      icon="pi pi-chart-bar"
+      (click)="goToDashLogs()"
+      class="p-button-secondary p-button-rounded"
+      aria-label="Go to DashLogs"
+    >
       <span class="button-label">DashLogs</span>
     </button>
-    <button pButton pRipple type="button" icon="pi pi-sign-out" (click)="logout()" class="p-button-danger p-button-rounded" aria-label="Logout">
+    <button
+      pButton
+      pRipple
+      type="button"
+      icon="pi pi-sign-out"
+      (click)="logout()"
+      class="p-button-danger p-button-rounded"
+      aria-label="Logout"
+    >
       <span class="button-label">Logout</span>
     </button>
   </div>

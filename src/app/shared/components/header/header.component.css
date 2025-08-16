@@ -90,6 +90,18 @@
   font-weight: 500;
 }
 
+.p-button-tasks {
+  background: #4caf50; /* Green for tasks */
+  border: none;
+  color: #ffffff;
+}
+
+.p-button-tasks:hover {
+  background: #388e3c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
 @media (max-width: 768px) {
   .header-container {
     padding: 1rem;
