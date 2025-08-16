@@ -24,22 +24,22 @@
   <div class="charts-container">
     <div class="chart-section">
       <h3>Distribución de Códigos de Estado</h3>
-      <canvas #statusChart width="400" height="200"></canvas>
+      <div echarts [options]="statusData" class="chart"></div>
     </div>
 
-    <div class="chart-section">
+    <div class="chart-section api-chart-section">
       <h3>Uso de la API</h3>
-      <canvas #apiChart width="400" height="200"></canvas>
+      <div echarts [options]="apiData" class="chart"></div>
     </div>
 
     <div class="chart-section">
       <h3>Estadísticas de Tiempo de Respuesta</h3>
-      <canvas #responseTimeChart width="400" height="200"></canvas>
+      <div echarts [options]="responseTimeData" class="chart"></div>
     </div>
 
     <div class="chart-section">
       <h3>Evolución del Total de Logs</h3>
-      <canvas #totalLogsChart width="400" height="200"></canvas>
+      <div echarts [options]="totalLogsData" class="chart"></div>
     </div>
   </div>
 </div>

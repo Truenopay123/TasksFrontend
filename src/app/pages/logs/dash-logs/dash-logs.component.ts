@@ -1,22 +1,21 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Inject, PLATFORM_ID, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Importar CommonModule
-import { ChartModule } from 'primeng/chart';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { NgxEchartsModule } from 'ngx-echarts';
 import { LogService } from '../../../core/logs/log.service';
-import Chart from 'chart.js/auto';
-import { isPlatformBrowser } from '@angular/common';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
+import * as echarts from 'echarts';
 
 @Component({
   selector: 'app-dash-logs',
   standalone: true,
-  imports: [CommonModule, ChartModule, HeaderComponent, DecimalPipe], // Agregar CommonModule aquí
+  imports: [CommonModule, NgxEchartsModule, HeaderComponent, DecimalPipe],
   templateUrl: './dash-logs.component.html',
   styleUrl: './dash-logs.component.css'
 })
-export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DashLogsComponent implements OnInit, OnDestroy {
   logData: any[] = [];
   statusCounts: { [key: string]: number } = {};
   totalLogs: number = 0;
@@ -28,21 +27,17 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
   rateLimitExceeded: boolean = false;
   rateLimitMessage: string = '';
 
-  @ViewChild('statusChart') statusChartRef!: ElementRef;
-  @ViewChild('apiChart') apiChartRef!: ElementRef;
-  @ViewChild('responseTimeChart') responseTimeChartRef!: ElementRef;
-  @ViewChild('totalLogsChart') totalLogsChartRef!: ElementRef;
-  private statusChart!: Chart;
-  private apiChart!: Chart;
-  private responseTimeChart!: Chart;
-  private totalLogsChart!: Chart;
   private refreshInterval: any;
 
   logHistory: { timestamp: string, total: number }[] = [];
 
+  statusData: any;
+  apiData: any;
+  responseTimeData: any;
+  totalLogsData: any;
+
   constructor(
     private logService: LogService,
-    @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router
   ) {}
 
@@ -53,20 +48,10 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 60000);
   }
 
-  ngAfterViewInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      this.initializeCharts();
-    }
-  }
-
   ngOnDestroy(): void {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }
-    if (this.statusChart) this.statusChart.destroy();
-    if (this.apiChart) this.apiChart.destroy();
-    if (this.responseTimeChart) this.responseTimeChart.destroy();
-    if (this.totalLogsChart) this.totalLogsChart.destroy();
   }
 
   private fetchLogs(): void {
@@ -101,10 +86,10 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.avgResponseTime = 0;
 
     this.logData.forEach((log: any) => {
-      const status = log.status.toString();
+      const status = log.status ? log.status.toString() : 'unknown';
       const responseTime = parseFloat(log.response_time) || 0;
-      const route = log.route;
-      const service = log.service;
+      const route = log.route || 'unknown';
+      const service = log.service || 'unknown';
 
       this.statusCounts[status] = (this.statusCounts[status] || 0) + 1;
       totalResponseTime += responseTime;
@@ -118,7 +103,7 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const now = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
     this.logHistory.push({ timestamp: now, total: this.totalLogs });
-    if (this.logHistory.length > 10) {
+    if (this.logHistory.length > 50) { // Limit to 50 points for performance
       this.logHistory.shift();
     }
 
@@ -128,151 +113,138 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.maxResponseTime = 0;
     }
 
-    if (isPlatformBrowser(this.platformId)) {
-      if (this.statusChart) {
-        this.statusChart.data.labels = Object.keys(this.statusCounts);
-        this.statusChart.data.datasets[0].data = Object.values(this.statusCounts);
-        this.statusChart.update();
-      }
-      if (this.apiChart) {
-        this.apiChart.data.labels = Object.keys(this.apiUsage);
-        this.apiChart.data.datasets[0].data = Object.values(this.apiUsage);
-        this.apiChart.update();
-      }
-      if (this.responseTimeChart) {
-        this.responseTimeChart.data.datasets[0].data = [this.avgResponseTime, this.minResponseTime, this.maxResponseTime];
-        this.responseTimeChart.update();
-      }
-      if (this.totalLogsChart) {
-        this.totalLogsChart.data.labels = this.logHistory.map(entry => entry.timestamp);
-        this.totalLogsChart.data.datasets[0].data = this.logHistory.map(entry => entry.total);
-        this.totalLogsChart.update();
-      }
-    }
-  }
-
-  initializeCharts(): void {
-    const statusCtx = this.statusChartRef.nativeElement.getContext('2d');
-    this.statusChart = new Chart(statusCtx, {
-      type: 'pie',
-      data: {
-        labels: Object.keys(this.statusCounts),
-        datasets: [{
-          data: Object.values(this.statusCounts),
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
-        }]
+    // Set chart data for ECharts
+    this.statusData = {
+      tooltip: {
+        trigger: 'item'
       },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'top' },
-          title: { display: true, text: 'Distribución de Códigos de Estado' }
-        }
-      }
-    });
-
-    const apiCtx = this.apiChartRef.nativeElement.getContext('2d');
-    this.apiChart = new Chart(apiCtx, {
-      type: 'bar',
-      data: {
-        labels: Object.keys(this.apiUsage),
-        datasets: [{
-          label: 'Llamadas a la API',
-          data: Object.values(this.apiUsage),
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
-          borderColor: ['#E5556C', '#1E88E5', '#E6B800', '#3AA8A8', '#7B1FA2'],
-          borderWidth: 1
-        }]
+      legend: {
+        top: '5%',
+        left: 'center'
       },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'top' },
-          title: { display: true, text: 'Uso de la API' }
+      series: [{
+        name: 'Distribución de Códigos de Estado',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        label: {
+          show: false,
+          position: 'center'
         },
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: { display: true, text: 'Número de Llamadas' }
-          },
-          x: {
-            title: { display: true, text: 'Rutas de la API' },
-            ticks: {
-              autoSkip: true,
-              maxRotation: 45,
-              minRotation: 45,
-              maxTicksLimit: 10
-            }
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 20,
+            fontWeight: 'bold'
           }
-        }
-      }
-    });
-
-    const responseTimeCtx = this.responseTimeChartRef.nativeElement.getContext('2d');
-    this.responseTimeChart = new Chart(responseTimeCtx, {
-      type: 'bar',
-      data: {
-        labels: ['Promedio', 'Mínimo', 'Máximo'],
-        datasets: [{
-          label: 'Tiempo de Respuesta (segundos)',
-          data: [this.avgResponseTime, this.minResponseTime, this.maxResponseTime],
-          backgroundColor: ['#4BC0C0', '#FFCE56', '#FF6384'],
-          borderColor: ['#3AA8A8', '#E6B800', '#E5556C'],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'top' },
-          title: { display: true, text: 'Estadísticas de Tiempo de Respuesta' }
         },
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: { display: true, text: 'Tiempo (segundos)' },
-            suggestedMax: this.maxResponseTime > 0 ? this.maxResponseTime * 1.2 : 1
-          },
-          x: {
-            title: { display: true, text: 'Métricas' }
-          }
-        }
-      }
-    });
-
-    const totalLogsCtx = this.totalLogsChartRef.nativeElement.getContext('2d');
-    this.totalLogsChart = new Chart(totalLogsCtx, {
-      type: 'line',
-      data: {
-        labels: this.logHistory.map(entry => entry.timestamp),
-        datasets: [{
-          label: 'Total de Logs',
-          data: this.logHistory.map(entry => entry.total),
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
-          borderColor: '#36A2EB',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'top' },
-          title: { display: true, text: 'Evolución del Total de Logs' }
+        labelLine: {
+          show: false
         },
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: { display: true, text: 'Número de Logs' },
-            suggestedMax: 100
-          },
-          x: {
-            title: { display: true, text: 'Hora' }
-          }
+        data: Object.entries(this.statusCounts).map(([key, value]) => ({ value, name: key }))
+      }]
+    };
+
+    // Top 10 API usages
+    const apiEntries = Object.entries(this.apiUsage).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    this.apiData = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' }
+      },
+      legend: {
+        top: '5%'
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: apiEntries.map(e => e[0]),
+        axisLabel: {
+          rotate: 45,
+          interval: 0 // Show all labels
         }
-      }
-    });
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [{
+        name: 'Llamadas a la API',
+        type: 'bar',
+        data: apiEntries.map(e => e[1]),
+        itemStyle: {
+          color: '#FF6384'
+        }
+      }]
+    };
+
+    this.responseTimeData = {
+      tooltip: {
+        trigger: 'axis'
+      },
+      legend: {
+        top: '5%'
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: ['Promedio', 'Mínimo', 'Máximo']
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [{
+        name: 'Tiempo de Respuesta (segundos)',
+        type: 'bar',
+        data: [this.avgResponseTime, this.minResponseTime, this.maxResponseTime],
+        itemStyle: {
+          color: (params: any) => ['#4BC0C0', '#FFCE56', '#FF6384'][params.dataIndex]
+        }
+      }]
+    };
+
+    this.totalLogsData = {
+      tooltip: {
+        trigger: 'axis'
+      },
+      legend: {
+        top: '5%'
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: this.logHistory.map(entry => entry.timestamp)
+      },
+      yAxis: {
+        type: 'value',
+        max: Math.max(...this.logHistory.map(e => e.total)) * 1.2 || 100
+      },
+      series: [{
+        name: 'Total de Logs',
+        type: 'line',
+        data: this.logHistory.map(entry => entry.total),
+        itemStyle: {
+          color: '#36A2EB'
+        },
+        areaStyle: {
+          color: 'rgba(54, 162, 235, 0.2)'
+        }
+      }]
+    };
   }
 
   goBack(): void {
