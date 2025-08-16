@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Inject, PLATFORM_ID, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common'; // Importar CommonModule
 import { ChartModule } from 'primeng/chart';
 import { LogService } from '../../../core/logs/log.service';
 import Chart from 'chart.js/auto';
@@ -11,7 +12,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 @Component({
   selector: 'app-dash-logs',
   standalone: true,
-  imports: [ChartModule, HeaderComponent, DecimalPipe],
+  imports: [CommonModule, ChartModule, HeaderComponent, DecimalPipe], // Agregar CommonModule aquí
   templateUrl: './dash-logs.component.html',
   styleUrl: './dash-logs.component.css'
 })
@@ -71,7 +72,7 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
   private fetchLogs(): void {
     this.logService.getLogs().subscribe({
       next: (data: any) => {
-        this.logData = data.logs || [];
+        this.logData = Array.isArray(data) ? data : data.logs || [];
         this.processLogs();
         this.rateLimitExceeded = false;
       },
