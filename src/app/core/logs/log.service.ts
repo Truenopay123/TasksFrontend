@@ -7,7 +7,7 @@ import { environment } from '../environments/environment.prod';
   providedIn: 'root'
 })
 export class LogService {
-  private apiUrl = `${environment.apiUrl}/logs`; // Endpoint correcto
+  private apiUrl = `${environment.apiUrl}/logs`;
 
   constructor(private http: HttpClient) {}
 

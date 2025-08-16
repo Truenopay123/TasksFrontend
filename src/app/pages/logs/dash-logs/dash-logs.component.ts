@@ -6,7 +6,6 @@ import { HeaderComponent } from '../../../shared/components/header/header.compon
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Log } from '../../../core/models/task.model';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 
@@ -18,7 +17,7 @@ import { ButtonModule } from 'primeng/button';
   styleUrls: ['./dash-logs.component.css']
 })
 export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
-  logData: Log[] = [];
+  logData: any[] = [];
   statusCounts: { [key: string]: number } = {};
   totalLogs: number = 0;
   avgResponseTime: number = 0;
@@ -124,9 +123,9 @@ export class DashLogsComponent implements OnInit, AfterViewInit, OnDestroy {
     const users = new Set<string>();
     const routes = new Set<string>();
 
-    this.logData.forEach((log: Log) => {
-      const status = log.status ? log.status.toString() : 'unknown';
-      const responseTime = log.response_time || 0;
+    this.logData.forEach((log: any) => {
+      const status = log.status != null ? log.status.toString() : 'unknown';
+      const responseTime = typeof log.response_time === 'number' ? log.response_time : 0;
       const route = log.route || 'unknown';
       const service = log.service || 'unknown';
       const user = log.user || 'anonymous';
