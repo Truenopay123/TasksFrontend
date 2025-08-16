@@ -1,11 +1,52 @@
 <app-header [headerTitle]="'Dashboard de Logs'"></app-header>
 
-<div class="dashboard-container" *ngIf="!rateLimitExceeded; else rateLimitMessage">
+<div class="dashboard-container">
+  <!-- Formulario de filtros -->
+  <div class="filter-section">
+    <h3>Filtros</h3>
+    <form (ngSubmit)="applyFilters()" #filterForm="ngForm">
+      <div class="filter-group">
+        <label for="user">Usuario:</label>
+        <input id="user" name="user" type="text" [(ngModel)]="filterUser">
+      </div>
+      <div class="filter-group">
+        <label for="route">Ruta:</label>
+        <input id="route" name="route" type="text" [(ngModel)]="filterRoute">
+      </div>
+      <div class="filter-group">
+        <label for="status">Código de Estado:</label>
+        <input id="status" name="status" type="text" [(ngModel)]="filterStatus">
+      </div>
+      <div class="filter-group">
+        <label for="startDate">Fecha Inicio:</label>
+        <input id="startDate" name="startDate" type="date" [(ngModel)]="filterStartDate">
+      </div>
+      <div class="filter-group">
+        <label for="endDate">Fecha Fin:</label>
+        <input id="endDate" name="endDate" type="date" [(ngModel)]="filterEndDate">
+      </div>
+      <button pButton pRipple type="submit" class="filter-button">Aplicar Filtros</button>
+    </form>
+  </div>
+
+  <div *ngIf="rateLimitExceeded" class="rate-limit-message">
+    <p>{{ rateLimitMessage }}</p>
+    <button class="close-btn" (click)="rateLimitExceeded = false">×</button>
+  </div>
+
   <button pButton pRipple type="button" icon="pi pi-arrow-left" (click)="goBack()" class="back-button">Tareas</button>
   <div class="stats-summary">
     <div class="stat-card">
       <h3>Total de Logs</h3>
       <p>{{ totalLogs }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Usuarios Únicos</h3>
+      <p>{{ uniqueUsers }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Rutas Únicas</h3>
+      <p>{{ uniqueRoutes }}</p>
     </div>
     <div class="stat-card">
       <h3>Tiempo Promedio de Respuesta</h3>
@@ -43,9 +84,3 @@
     </div>
   </div>
 </div>
-
-<ng-template #rateLimitMessage>
-  <div class="rate-limit-message">
-    <p>{{ rateLimitMessage }}</p>
-  </div>
-</ng-template>

@@ -5,6 +5,51 @@
   font-family: Arial, sans-serif;
 }
 
+.filter-section {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.filter-section h3 {
+  margin-top: 0;
+  color: #333;
+  text-align: center;
+  font-size: 1.2em;
+}
+
+.filter-group {
+  margin-bottom: 10px;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.filter-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.filter-button {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.filter-button:hover {
+  background-color: #218838;
+}
+
 .back-button {
   margin-bottom: 20px;
   padding: 5px 10px;
@@ -24,6 +69,7 @@
   justify-content: space-around;
   margin-bottom: 30px;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .stat-card {
@@ -33,6 +79,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
   flex: 1;
+  min-width: 150px;
 }
 
 .stat-card h3 {
@@ -66,7 +113,7 @@
 }
 
 .api-chart-section {
-  min-height: 400px; /* Mayor altura para el gráfico de uso de API */
+  min-height: 400px;
 }
 
 .chart-section h3 {
@@ -80,4 +127,24 @@
   width: 100%;
   height: 100%;
   min-height: 250px;
+}
+
+.rate-limit-message {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  color: #856404;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 5px;
+  position: relative;
+}
+
+.rate-limit-message .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
 }
