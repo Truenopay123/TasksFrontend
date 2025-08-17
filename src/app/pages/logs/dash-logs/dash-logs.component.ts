@@ -1,15 +1,17 @@
+// dash-logs.component.ts
 import { Component, OnInit } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartData, ChartType, registerables } from 'chart.js';
 import { LogService } from '../../../core/logs/log.service';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { CommonModule } from '@angular/common';
-import { CardModule } from 'primeng/card'; // Importar CardModule
-import { IconFieldModule } from 'primeng/iconfield'; // Importar IconFieldModule para íconos
+import { CardModule } from 'primeng/card';
+import { IconFieldModule } from 'primeng/iconfield';
 
 Chart.register(...registerables);
 
 interface Log {
+  id: string;
   route: string;
   service: string;
   method: string;
@@ -17,7 +19,6 @@ interface Log {
   response_time: number;
   timestamp: string;
   user: string;
-  _id: string;
 }
 
 @Component({
@@ -27,8 +28,8 @@ interface Log {
     BaseChartDirective,
     CommonModule,
     HeaderComponent,
-    CardModule, // Agregar CardModule
-    IconFieldModule // Agregar IconFieldModule
+    CardModule,
+    IconFieldModule
   ],
   templateUrl: './dash-logs.component.html',
   styleUrls: ['./dash-logs.component.css']
@@ -91,7 +92,9 @@ export class DashLogsComponent implements OnInit {
       },
       error: (error) => {
         if (error.status === 429) {
-          this.rateLimitMessage = error.error.message || 'Has alcanzado el límite de peticiones. Por favor, intenta de nuevo más tarde.';
+          this.rateLimitMessage = error.error?.intData?.message || 'Has alcanzado el límite de peticiones. Por favor, intenta de nuevo más tarde.';
+        } else if (error.status === 401) {
+          this.rateLimitMessage = 'No autorizado. Por favor, inicia sesión nuevamente.';
         } else {
           this.rateLimitMessage = 'Ocurrió un error al cargar los registros. Por favor, intenta de nuevo.';
         }

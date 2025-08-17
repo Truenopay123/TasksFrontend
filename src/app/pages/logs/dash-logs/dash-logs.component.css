@@ -118,20 +118,16 @@ canvas {
   color: #EF5350; /* Rojo para códigos de error */
 }
 
-.alert {
-  background-color: #fff3cd;
-  border: 1px solid #ffeeba;
-  color: #856404;
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 5px;
-  position: relative;
-}
-
-.alert-warning {
+.alert.alert-warning {
   background-color: #fff3cd;
   border-color: #ffeeba;
   color: #856404;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .close-btn {

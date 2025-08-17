@@ -30,6 +30,7 @@ export class TaskListComponent implements OnInit {
   tasks: Task[] = [];
   kanbanColumns: KanbanColumn[] = [];
   columnIds: string[] = [];
+  rateLimitMessage: string | null = null;
 
   constructor(private taskService: TaskService, private router: Router, private confirmationService: ConfirmationService) {}
 
@@ -43,14 +44,21 @@ export class TaskListComponent implements OnInit {
         next: (res: RespuestaTareasLista) => {
           this.tasks = res.intData?.data ?? [];
           this.setKanbanColumns();
+          this.rateLimitMessage = null;
         },
         error: (err) => {
           this.tasks = [];
+          if (err.status === 429) {
+            this.rateLimitMessage = err.error.intData?.message || 'Has alcanzado el límite de peticiones. Por favor, intenta de nuevo más tarde.';
+          } else {
+            this.rateLimitMessage = 'Ocurrió un error al cargar las tareas. Por favor, intenta de nuevo.';
+          }
           console.error('Error fetching tasks:', err);
         },
       });
     } else {
       console.error('No username found in localStorage');
+      this.rateLimitMessage = 'No se encontró el nombre de usuario. Por favor, inicia sesión nuevamente.';
     }
   }
 
@@ -93,6 +101,7 @@ export class TaskListComponent implements OnInit {
           if (taskIndex !== -1) {
             this.tasks[taskIndex].status = newStatus;
           }
+          this.rateLimitMessage = null;
         },
         error: (err) => {
           console.error('Error al actualizar el estado de la tarea:', err);
@@ -102,6 +111,11 @@ export class TaskListComponent implements OnInit {
             event.currentIndex,
             event.previousIndex
           );
+          if (err.status === 429) {
+            this.rateLimitMessage = err.error.intData?.message || 'Has alcanzado el límite de peticiones. Por favor, intenta de nuevo más tarde.';
+          } else {
+            this.rateLimitMessage = 'Ocurrió un error al actualizar el estado de la tarea. Por favor, intenta de nuevo.';
+          }
         },
       });
     }
@@ -156,12 +170,22 @@ export class TaskListComponent implements OnInit {
           next: () => {
             this.tasks = this.tasks.filter(t => t.id !== taskId);
             this.setKanbanColumns();
+            this.rateLimitMessage = null;
           },
           error: (err) => {
             console.error('Error al eliminar la tarea:', err);
+            if (err.status === 429) {
+              this.rateLimitMessage = err.error.intData?.message || 'Has alcanzado el límite de peticiones. Por favor, intenta de nuevo más tarde.';
+            } else {
+              this.rateLimitMessage = 'Ocurrió un error al eliminar la tarea. Por favor, intenta de nuevo.';
+            }
           }
         });
       }
     });
+  }
+
+  clearRateLimitMessage() {
+    this.rateLimitMessage = null;
   }
 }
