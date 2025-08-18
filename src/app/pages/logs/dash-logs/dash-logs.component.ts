@@ -116,8 +116,13 @@ export class DashLogsComponent implements OnInit {
       if (log.route === '/favicon.ico') continue;
       routes.add(log.route);
       users.add(log.user);
-      sumRT += log.response_time;
-      if (log.response_time < minRT) minRT = log.response_time;
+
+      // Validate response_time before adding to sum
+      if (log.response_time != null && !isNaN(log.response_time) && typeof log.response_time === 'number') {
+        sumRT += log.response_time;
+        if (log.response_time < minRT) minRT = log.response_time;
+      }
+
       const statusStr = log.status.toString();
       if (['200', '401', '404', '500'].includes(statusStr)) {
         this.statusCounts[statusStr] = (this.statusCounts[statusStr] || 0) + 1;
@@ -128,8 +133,9 @@ export class DashLogsComponent implements OnInit {
 
     this.uniqueRoutes = routes.size;
     this.uniqueUsers = users.size;
-    this.avgResponseTime = this.totalLogs > 0 ? (sumRT / this.totalLogs).toFixed(4) : '0.0000';
-    this.minResponseTime = isFinite(minRT) ? minRT.toFixed(4) : '0.0000';
+    // Calculate average only if there are valid logs with response_time
+    this.avgResponseTime = this.totalLogs > 0 && sumRT > 0 ? (sumRT / this.totalLogs).toFixed(4) : '0.0000';
+    this.minResponseTime = isFinite(minRT) && minRT !== Infinity ? minRT.toFixed(4) : '0.0000';
 
     let maxCount = 0;
     let minCount = Infinity;
