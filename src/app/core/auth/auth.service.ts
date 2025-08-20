@@ -38,7 +38,7 @@ class LoggerService {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = `${environment.apiUrl}auth`; // Asegúrate de que la URL es correcta
+  private apiUrl = `${environment.apiUrl}`; // Asegúrate de que la URL es correcta
 
   constructor(
     private http: HttpClient,
